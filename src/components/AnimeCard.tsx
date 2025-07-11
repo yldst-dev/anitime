@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../utils/cn';
 import { AnimeItem, getAnimeStatus, getStatusLabel, getStatusColor, formatTime, formatGenres } from '../types/anime';
 import { useState, useEffect } from 'react';
@@ -93,16 +93,24 @@ export function AnimeCard({ anime, className }: AnimeCardProps) {
         whileTap={{ scale: 0.98 }}
       >
         {anime.subject}
-        {copySuccess && (
-          <motion.span
-            className="absolute -top-8 left-0 bg-primary text-on-primary text-xs px-2 py-1 rounded-md"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-          >
-            복사완료!
-          </motion.span>
-        )}
+        <AnimatePresence>
+          {copySuccess && (
+            <motion.span
+              className="absolute -top-8 left-0 bg-primary text-on-primary text-xs px-2 py-1 rounded-md z-10"
+              initial={{ opacity: 0, y: 10, scale: 0.8 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.8 }}
+              transition={{ 
+                type: 'spring', 
+                stiffness: 400, 
+                damping: 25,
+                duration: 0.3
+              }}
+            >
+              복사완료!
+            </motion.span>
+          )}
+        </AnimatePresence>
       </motion.h3>
 
       {/* 원제 */}

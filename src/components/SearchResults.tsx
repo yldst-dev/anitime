@@ -230,16 +230,24 @@ function EnhancedAnimeCard({ anime, searchQuery }: { anime: AnimeItem, searchQue
         whileTap={{ scale: 0.98 }}
       >
         <HighlightedText text={anime.subject} query={searchQuery} />
-        {copySuccess && (
-          <motion.span
-            className="absolute -top-8 left-0 bg-primary text-on-primary text-xs px-2 py-1 rounded-md z-10"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-          >
-            복사완료!
-          </motion.span>
-        )}
+        <AnimatePresence>
+          {copySuccess && (
+            <motion.span
+              className="absolute -top-8 left-0 bg-primary text-on-primary text-xs px-2 py-1 rounded-md z-10"
+              initial={{ opacity: 0, y: 10, scale: 0.8 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.8 }}
+              transition={{ 
+                type: 'spring', 
+                stiffness: 400, 
+                damping: 25,
+                duration: 0.3
+              }}
+            >
+              복사완료!
+            </motion.span>
+          )}
+        </AnimatePresence>
       </motion.h3>
 
       {/* 원제 (하이라이트 적용) */}

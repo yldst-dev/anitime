@@ -40,7 +40,34 @@ export function SubscribeButton({
     }
   }, [anime.animeNo, mounted]);
 
+  // 스토리지 변경 감지
+  useEffect(() => {
+    if (!mounted) return;
+
+    const handleStorageChange = () => {
+      setSubscribed(isSubscribed(anime.animeNo));
+    };
+
+    // localStorage 변경 감지
+    window.addEventListener('storage', handleStorageChange);
+    
+    // 주기적으로 상태 확인 (다른 탭에서의 변경사항 반영)
+    const interval = setInterval(() => {
+      const currentState = isSubscribed(anime.animeNo);
+      if (currentState !== subscribed) {
+        setSubscribed(currentState);
+      }
+    }, 1000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, [anime.animeNo, mounted, subscribed]);
+
   const handleSubscribe = async () => {
+    if (loading) return; // 중복 클릭 방지
+    
     setLoading(true);
     
     try {
@@ -49,15 +76,33 @@ export function SubscribeButton({
         setSubscribed(false);
         showUnsubscribeSuccess(anime.subject);
         onSubscriptionChange?.(false);
+        
+        // 브라우저 환경에서 스토리지 이벤트 강제 발생
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new StorageEvent('storage', {
+            key: 'anime-subscriptions',
+            newValue: localStorage.getItem('anime-subscriptions')
+          }));
+        }
       } else {
         subscribeToAnime(anime);
         setSubscribed(true);
         showSubscribeSuccess(anime.subject);
         onSubscriptionChange?.(true);
+        
+        // 브라우저 환경에서 스토리지 이벤트 강제 발생
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new StorageEvent('storage', {
+            key: 'anime-subscriptions',
+            newValue: localStorage.getItem('anime-subscriptions')
+          }));
+        }
       }
     } catch (error) {
       console.error('구독 처리 중 오류:', error);
       showSubscribeError();
+      // 오류 발생 시 상태 되돌리기
+      setSubscribed(isSubscribed(anime.animeNo));
     } finally {
       setLoading(false);
     }
@@ -199,6 +244,29 @@ export function SubscriptionBadge({
       setSubscribed(isSubscribed(anime.animeNo));
     }
   }, [anime.animeNo, mounted]);
+
+  // 스토리지 변경 감지
+  useEffect(() => {
+    if (!mounted) return;
+
+    const handleStorageChange = () => {
+      setSubscribed(isSubscribed(anime.animeNo));
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    const interval = setInterval(() => {
+      const currentState = isSubscribed(anime.animeNo);
+      if (currentState !== subscribed) {
+        setSubscribed(currentState);
+      }
+    }, 1000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, [anime.animeNo, mounted, subscribed]);
 
   if (!mounted || !subscribed) return null;
 
