@@ -1,0 +1,190 @@
+---
+import '../styles/material-tokens.css';
+import { NotificationManager } from '../components/NotificationManager';
+import { ToastProvider } from '../components/GlobalToast';
+
+export interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "현재 방영중인 애니메이션 편성표를 확인하세요" } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+    
+    <!-- Pretendard 폰트 -->
+    <link rel="preconnect" href="https://fastly.jsdelivr.net">
+    <link 
+      rel="stylesheet" 
+      as="style" 
+      crossorigin 
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" 
+    />
+    
+    <!-- Google Fonts (Fallback) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Meta tags for SEO -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    
+    <!-- Theme color for mobile browsers -->
+    <meta name="theme-color" content="#6750a4" />
+    
+    <!-- Disable zoom on mobile -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  </head>
+  <body class="font-pretendard bg-surface text-on-surface min-h-screen">
+    <!-- Toast Provider로 전체 애플리케이션 감싸기 -->
+    <ToastProvider client:load>
+      <main class="min-h-screen">
+        <slot />
+      </main>
+      
+      <!-- Notification Manager -->
+      <div id="notification-manager"></div>
+    </ToastProvider>
+    
+    <!-- Scroll to top button -->
+    <button
+      id="scrollToTop"
+      class="fixed bottom-6 right-6 w-12 h-12 bg-primary text-on-primary rounded-full opacity-0 invisible transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 z-50"
+      aria-label="맨 위로 이동"
+    >
+      <svg class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+      </svg>
+    </button>
+
+    <script>
+      // Scroll to top functionality
+      const scrollToTopBtn = document.getElementById('scrollToTop');
+      
+      window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 100) {
+          scrollToTopBtn?.classList.remove('opacity-0', 'invisible');
+        } else {
+          scrollToTopBtn?.classList.add('opacity-0', 'invisible');
+        }
+      });
+      
+      scrollToTopBtn?.addEventListener('click', () => {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      });
+      
+      // Dark mode detection and handling
+      const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)');
+      
+      const updateTheme = (e) => {
+        const isDark = e.matches;
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+      };
+      
+      prefersDarkMode.addEventListener('change', updateTheme);
+      updateTheme(prefersDarkMode);
+      
+      // Handle reduced motion preference
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      
+      const updateMotion = (e) => {
+        const reduceMotion = e.matches;
+        document.documentElement.setAttribute('data-reduce-motion', reduceMotion ? 'true' : 'false');
+        
+        if (reduceMotion) {
+          document.documentElement.style.setProperty('--animation-duration', '0.01ms');
+        } else {
+          document.documentElement.style.removeProperty('--animation-duration');
+        }
+      };
+      
+      prefersReducedMotion.addEventListener('change', updateMotion);
+      updateMotion(prefersReducedMotion);
+    </script>
+    
+    <!-- Notification Manager Component -->
+    <NotificationManager client:only="react" />
+  </body>
+</html>
+
+<style is:global>
+  /* Pretendard 폰트를 기본 폰트로 설정 */
+  html, body {
+    font-family: "Pretendard", -apple-system, BlinkMacSystemFont, 
+                 "Apple SD Gothic Neo", "Noto Sans KR", Roboto, "Segoe UI", 
+                 "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", 
+                 "Segoe UI Symbol", sans-serif;
+    font-feature-settings: "kern" 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* 한글 텍스트 최적화 */
+  .korean-text {
+    word-break: keep-all;
+    word-wrap: break-word;
+    line-height: 1.6;
+  }
+  
+  /* 제목용 폰트 설정 */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  
+  /* 본문 텍스트 최적화 */
+  p, span, div {
+    letter-spacing: -0.01em;
+  }
+
+  /* Custom scrollbar styling */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Smooth scrolling for the entire page */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Enhanced focus styles */
+  *:focus-visible {
+    outline: 2px solid var(--md-sys-color-primary);
+    outline-offset: 2px;
+  }
+  
+  /* Loading animation for images */
+  img {
+    transition: opacity 0.3s ease;
+  }
+  
+  img[loading="lazy"] {
+    opacity: 0;
+  }
+  
+  img[loading="lazy"].loaded {
+    opacity: 1;
+  }
+</style>

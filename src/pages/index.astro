@@ -1,0 +1,11 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+import { AnimeSchedule } from '../components/AnimeSchedule';
+---
+
+<AppLayout title="애니메이션 편성표" currentPath="/">
+  <!-- 메인 컨텐츠 -->
+  <div class="container mx-auto px-4 py-8">
+    <AnimeSchedule client:load />
+  </div>
+</AppLayout>

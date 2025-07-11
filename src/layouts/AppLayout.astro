@@ -1,0 +1,52 @@
+---
+import MaterialLayout from './MaterialLayout.astro';
+import { AppHeader } from '../components/AppHeader';
+import { ToastProvider } from '../components/GlobalToast';
+
+export interface Props {
+  title: string;
+  description?: string;
+  currentPath: string;
+}
+
+const { title, description = "현재 방영중인 애니메이션 편성표를 확인하세요", currentPath } = Astro.props;
+---
+
+<MaterialLayout title={title} description={description}>
+  <ToastProvider client:load>
+    <div class="bg-surface min-h-screen">
+      <!-- 고정 헤더 -->
+      <AppHeader currentPath={currentPath} client:load />
+      
+      <!-- 메인 콘텐츠 -->
+      <main class="flex-1">
+        <slot />
+      </main>
+
+      <!-- 푸터 -->
+      <footer class="bg-surface-container mt-20 py-8">
+        <div class="container mx-auto px-4 text-center">
+          <p class="text-on-surface-variant text-sm">
+            데이터 제공: <a href="https://anissia.net" target="_blank" rel="noopener noreferrer" 
+               class="text-primary hover:underline">Anissia.net</a>
+          </p>
+        </div>
+      </footer>
+    </div>
+  </ToastProvider>
+</MaterialLayout>
+
+<style>
+  /* 추가적인 스타일링 */
+  .container {
+    max-width: 1200px;
+  }
+  
+  /* 반응형 개선 */
+  @media (max-width: 768px) {
+    .container {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  }
+</style>
