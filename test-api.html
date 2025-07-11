@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anissia API 테스트</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .result { margin: 20px 0; padding: 10px; border: 1px solid #ccc; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        button { padding: 10px 20px; margin: 5px; }
+        pre { background: #f4f4f4; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Anissia.net API 테스트</h1>
+    
+    <div>
+        <h2>주간별 애니메이션 조회</h2>
+        <button onclick="testAPI(0)">일요일 (0)</button>
+        <button onclick="testAPI(1)">월요일 (1)</button>
+        <button onclick="testAPI(2)">화요일 (2)</button>
+        <button onclick="testAPI(3)">수요일 (3)</button>
+        <button onclick="testAPI(4)">목요일 (4)</button>
+        <button onclick="testAPI(5)">금요일 (5)</button>
+        <button onclick="testAPI(6)">토요일 (6)</button>
+        <button onclick="testAPI(7)">기타 (7)</button>
+        <button onclick="testAPI(8)">신작 (8)</button>
+    </div>
+
+    <div id="result" class="result" style="display: none;">
+        <h3>결과</h3>
+        <div id="status"></div>
+        <pre id="data"></pre>
+    </div>
+
+    <script>
+        async function testAPI(week) {
+            const resultDiv = document.getElementById('result');
+            const statusDiv = document.getElementById('status');
+            const dataDiv = document.getElementById('data');
+            
+            resultDiv.style.display = 'block';
+            statusDiv.innerHTML = `<strong>요청 중...</strong> 주간: ${week}`;
+            dataDiv.textContent = '';
+            
+            try {
+                const startTime = Date.now();
+                console.log(`API 호출 시작: week=${week}`);
+                
+                const response = await fetch(`https://api.anissia.net/anime/schedule/${week}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                });
+                
+                const endTime = Date.now();
+                console.log(`API 응답 시간: ${endTime - startTime}ms`);
+                console.log(`응답 상태: ${response.status}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('응답 데이터:', data);
+                
+                // 결과 표시
+                resultDiv.className = 'result success';
+                statusDiv.innerHTML = `
+                    <strong>✅ 성공!</strong><br>
+                    주간: ${week}<br>
+                    응답 시간: ${endTime - startTime}ms<br>
+                    데이터 개수: ${Array.isArray(data) ? data.length : 'Unknown'}개
+                `;
+                
+                // 첫 3개 항목만 표시
+                const displayData = Array.isArray(data) ? data.slice(0, 3) : data;
+                dataDiv.textContent = JSON.stringify(displayData, null, 2);
+                
+                // 콘솔에 전체 데이터 출력
+                if (Array.isArray(data) && data.length > 0) {
+                    console.table(data.slice(0, 5)); // 첫 5개만 테이블로 표시
+                    console.log('첫 번째 애니메이션:', data[0]);
+                }
+                
+            } catch (error) {
+                console.error('API 호출 오류:', error);
+                
+                resultDiv.className = 'result error';
+                statusDiv.innerHTML = `<strong>❌ 오류!</strong><br>주간: ${week}`;
+                dataDiv.textContent = error.message;
+            }
+        }
+        
+        // 페이지 로드 시 현재 요일 자동 테스트
+        window.onload = function() {
+            const today = new Date().getDay(); // 0=일요일, 1=월요일, ...
+            console.log('현재 요일:', today);
+            testAPI(today);
+        };
+    </script>
+</body>
+</html> 

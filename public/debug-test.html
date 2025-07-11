@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>애니메이션 편성표 디버그 테스트</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .result { margin-top: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .anime-item { border: 1px solid #eee; margin: 5px 0; padding: 10px; border-radius: 3px; }
+        .loading { color: #666; font-style: italic; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>애니메이션 편성표 API 테스트</h1>
+        
+        <div>
+            <button class="button" onclick="testAPI(0)">일요일 (0)</button>
+            <button class="button" onclick="testAPI(1)">월요일 (1)</button>
+            <button class="button" onclick="testAPI(2)">화요일 (2)</button>
+            <button class="button" onclick="testAPI(3)">수요일 (3)</button>
+            <button class="button" onclick="testAPI(4)">목요일 (4)</button>
+            <button class="button" onclick="testAPI(5)">금요일 (5)</button>
+            <button class="button" onclick="testAPI(6)">토요일 (6)</button>
+        </div>
+        
+        <div>
+            <button class="button" onclick="testMainSite()">메인 사이트 테스트</button>
+            <button class="button" onclick="checkConsole()">콘솔 로그 확인</button>
+        </div>
+
+        <div id="result" class="result" style="display: none;">
+            <div id="status"></div>
+            <div id="data"></div>
+        </div>
+    </div>
+
+    <script>
+        let allLogs = [];
+        
+        // 콘솔 로그 캡처
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        console.log = function(...args) {
+            allLogs.push({ type: 'log', time: new Date().toLocaleTimeString(), args });
+            originalLog.apply(console, args);
+        };
+        
+        console.error = function(...args) {
+            allLogs.push({ type: 'error', time: new Date().toLocaleTimeString(), args });
+            originalError.apply(console, args);
+        };
+        
+        console.warn = function(...args) {
+            allLogs.push({ type: 'warn', time: new Date().toLocaleTimeString(), args });
+            originalWarn.apply(console, args);
+        };
+
+        async function testAPI(week) {
+            const resultDiv = document.getElementById('result');
+            const statusDiv = document.getElementById('status');
+            const dataDiv = document.getElementById('data');
+            
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            statusDiv.innerHTML = `<div class="loading">요청 중... 주간: ${week}</div>`;
+            dataDiv.innerHTML = '';
+            
+            try {
+                const startTime = Date.now();
+                console.log(`API 호출 시작: week=${week}`);
+                
+                const response = await fetch(`https://api.anissia.net/anime/schedule/${week}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                });
+                
+                const endTime = Date.now();
+                console.log(`API 응답 시간: ${endTime - startTime}ms`);
+                console.log(`응답 상태: ${response.status}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('응답 데이터:', data);
+                
+                // 결과 표시
+                resultDiv.className = 'result success';
+                statusDiv.innerHTML = `
+                    <strong>✅ 성공!</strong><br>
+                    주간: ${week}<br>
+                    응답 시간: ${endTime - startTime}ms<br>
+                    응답 구조: ${data.code ? `{code: "${data.code}", data: Array(${data.data?.length || 0})}` : 'Array(' + (Array.isArray(data) ? data.length : 0) + ')'}<br>
+                    데이터 개수: ${data.data?.length || (Array.isArray(data) ? data.length : 0)}개
+                `;
+                
+                // 첫 3개 항목만 표시
+                const animeList = data.data || data;
+                let displayHTML = '';
+                
+                if (Array.isArray(animeList) && animeList.length > 0) {
+                    displayHTML = '<h4>첫 3개 애니메이션:</h4>';
+                    animeList.slice(0, 3).forEach((anime, index) => {
+                        displayHTML += `
+                            <div class="anime-item">
+                                <strong>${anime.subject}</strong><br>
+                                시간: ${anime.time} | 상태: ${anime.status} | 장르: ${anime.genres}<br>
+                                animeNo: ${anime.animeNo} | 자막수: ${anime.captionCount}
+                            </div>
+                        `;
+                    });
+                } else {
+                    displayHTML = '<p>❌ 데이터가 없거나 배열이 아닙니다.</p>';
+                }
+                
+                dataDiv.innerHTML = displayHTML;
+                
+            } catch (error) {
+                console.error('API 호출 오류:', error);
+                
+                resultDiv.className = 'result error';
+                statusDiv.innerHTML = `<strong>❌ 오류!</strong><br>주간: ${week}`;
+                dataDiv.innerHTML = `<p>오류: ${error.message}</p>`;
+            }
+        }
+        
+        async function testMainSite() {
+            const resultDiv = document.getElementById('result');
+            const statusDiv = document.getElementById('status');
+            const dataDiv = document.getElementById('data');
+            
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            statusDiv.innerHTML = '<div class="loading">메인 사이트 접속 테스트 중...</div>';
+            dataDiv.innerHTML = '';
+            
+            try {
+                const response = await fetch('http://localhost:4321/');
+                const html = await response.text();
+                
+                const hasAnimeSchedule = html.includes('AnimeSchedule');
+                const hasAstroIsland = html.includes('astro-island');
+                const hasClientLoad = html.includes('client="load"');
+                
+                statusDiv.innerHTML = `
+                    <strong>메인 사이트 상태:</strong><br>
+                    응답 상태: ${response.status}<br>
+                    AnimeSchedule 컴포넌트: ${hasAnimeSchedule ? '✅ 발견' : '❌ 없음'}<br>
+                    Astro Island: ${hasAstroIsland ? '✅ 발견' : '❌ 없음'}<br>
+                    Client Load: ${hasClientLoad ? '✅ 발견' : '❌ 없음'}
+                `;
+                
+                if (hasAnimeSchedule) {
+                    resultDiv.className = 'result success';
+                    dataDiv.innerHTML = '<p>✅ 메인 사이트가 정상적으로 렌더링되고 있습니다.</p>';
+                } else {
+                    resultDiv.className = 'result error';
+                    dataDiv.innerHTML = '<p>❌ AnimeSchedule 컴포넌트를 찾을 수 없습니다.</p>';
+                }
+                
+            } catch (error) {
+                resultDiv.className = 'result error';
+                statusDiv.innerHTML = '<strong>❌ 메인 사이트 접속 실패!</strong>';
+                dataDiv.innerHTML = `<p>오류: ${error.message}</p>`;
+            }
+        }
+        
+        function checkConsole() {
+            const resultDiv = document.getElementById('result');
+            const statusDiv = document.getElementById('status');
+            const dataDiv = document.getElementById('data');
+            
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            statusDiv.innerHTML = '<strong>콘솔 로그 기록:</strong>';
+            
+            if (allLogs.length === 0) {
+                dataDiv.innerHTML = '<p>기록된 로그가 없습니다.</p>';
+            } else {
+                let logHTML = '<div style="max-height: 300px; overflow-y: auto; font-family: monospace; font-size: 12px;">';
+                allLogs.forEach(log => {
+                    const color = log.type === 'error' ? 'red' : log.type === 'warn' ? 'orange' : 'black';
+                    logHTML += `<div style="color: ${color}; margin: 2px 0;">
+                        [${log.time}] ${log.type.toUpperCase()}: ${JSON.stringify(log.args, null, 2)}
+                    </div>`;
+                });
+                logHTML += '</div>';
+                dataDiv.innerHTML = logHTML;
+            }
+        }
+        
+        // 페이지 로드 시 현재 요일 자동 테스트
+        window.onload = function() {
+            const today = new Date().getDay(); // 0=일요일, 1=월요일, ...
+            console.log('현재 요일:', today);
+            console.log('디버그 페이지 로드됨');
+            testAPI(today);
+        };
+    </script>
+</body>
+</html> 
