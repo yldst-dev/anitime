@@ -99,7 +99,18 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
               )}
               initial={{ opacity: 0, y: 50, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -30, scale: 0.8, rotateX: -10 }}
+              exit={{ 
+                opacity: 0, 
+                y: -20, 
+                scale: 0.85,
+                x: 100,
+                transition: {
+                  type: 'spring',
+                  stiffness: 300,
+                  damping: 25,
+                  duration: 0.5
+                }
+              }}
               transition={{ 
                 type: 'spring', 
                 stiffness: 400, 

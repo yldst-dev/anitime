@@ -348,6 +348,7 @@ export function SubscriptionStats({
 
   return (
     <motion.div
+      key={`subscription-stats-${stats.totalSubscriptions}`}
       className={cn(
         'grid grid-cols-2 gap-2 p-3 bg-surface-container rounded-lg',
         'border border-outline-variant',
@@ -355,6 +356,17 @@ export function SubscriptionStats({
       )}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
+      exit={{ 
+        opacity: 0, 
+        y: -15, 
+        scale: 0.9,
+        transition: {
+          type: 'spring',
+          stiffness: 300,
+          damping: 25,
+          duration: 0.4
+        }
+      }}
       transition={{ duration: 0.3 }}
     >
       <div className="text-center">

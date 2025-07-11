@@ -161,7 +161,9 @@ export function AnimeSchedule({ className }: AnimeScheduleProps) {
         transition={{ delay: 0.6 }}
       >
         <ErrorBoundary fallback={null}>
-          <SubscriptionStats />
+          <AnimatePresence mode="wait">
+            <SubscriptionStats />
+          </AnimatePresence>
         </ErrorBoundary>
       </motion.div>
 

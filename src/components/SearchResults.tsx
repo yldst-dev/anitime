@@ -233,6 +233,7 @@ function EnhancedAnimeCard({ anime, searchQuery }: { anime: AnimeItem, searchQue
           'cursor-pointer hover:text-primary transition-colors duration-200',
           'relative'
         )}
+        style={{ transformOrigin: 'left center' }}
         onClick={() => handleTitleClick(anime.subject)}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
@@ -265,6 +266,7 @@ function EnhancedAnimeCard({ anime, searchQuery }: { anime: AnimeItem, searchQue
             'text-sm text-on-surface-variant mb-2',
             'cursor-pointer hover:text-secondary transition-colors duration-200'
           )}
+          style={{ transformOrigin: 'left center' }}
           onClick={() => handleTitleClick(anime.originalSubject!)}
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.99 }}
