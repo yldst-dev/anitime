@@ -263,12 +263,12 @@ export function UnifiedSearch({ className }: UnifiedSearchProps) {
           {/* 인기 장르 태그 */}
           {popularGenres.length > 0 && !searchQuery && (
             <motion.div
-              className="mt-3 flex flex-wrap gap-2"
+              className="mt-3 flex flex-wrap gap-2 items-center"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
             >
-              <span className="text-xs font-medium text-on-surface-variant mr-2">
+              <span className="text-xs font-medium text-on-surface-variant">
                 인기 장르:
               </span>
               {popularGenres.map((genre, index) => (

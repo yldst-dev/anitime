@@ -40,6 +40,48 @@
   --md-sys-color-on-error: #FFFFFF;         /* 톤 100 */
   --md-sys-color-error-container: #FFDAD6;  /* 톤 90 */
   --md-sys-color-on-error-container: #410002; /* 톤 10 */
+}
+
+/* Dark Theme Colors */
+.dark {
+  /* Primary Colors (Purple - 다크 테마) */
+  --md-sys-color-primary: #D0BCFF;           /* 톤 80 */
+  --md-sys-color-on-primary: #381E72;        /* 톤 20 */
+  --md-sys-color-primary-container: #4F378B; /* 톤 30 */
+  --md-sys-color-on-primary-container: #EADDFF; /* 톤 90 */
+
+  /* Secondary Colors (Purple Variant - 다크 테마) */
+  --md-sys-color-secondary: #CCC2DC;         /* 톤 80 */
+  --md-sys-color-on-secondary: #332D41;      /* 톤 20 */
+  --md-sys-color-secondary-container: #4A4458; /* 톤 30 */
+  --md-sys-color-on-secondary-container: #E8DEF8; /* 톤 90 */
+
+  /* Tertiary Colors (Pink Accent - 다크 테마) */
+  --md-sys-color-tertiary: #EFB8C8;          /* 톤 80 */
+  --md-sys-color-on-tertiary: #492532;       /* 톤 20 */
+  --md-sys-color-tertiary-container: #633B48; /* 톤 30 */
+  --md-sys-color-on-tertiary-container: #FFD8E4; /* 톤 90 */
+
+  /* Surface Colors (Neutral - 다크 테마) */
+  --md-sys-color-surface: #141218;           /* 톤 6 */
+  --md-sys-color-surface-dim: #141218;       /* 톤 6 */
+  --md-sys-color-surface-bright: #3B383E;    /* 톤 24 */
+  --md-sys-color-surface-container: #1F1A20; /* 톤 8 */
+  --md-sys-color-surface-container-low: #1C1B1F; /* 톤 4 */
+  --md-sys-color-surface-container-high: #2B2930; /* 톤 17 */
+  --md-sys-color-surface-container-highest: #36343B; /* 톤 22 */
+  --md-sys-color-on-surface: #E6E0E9;       /* 톤 90 */
+  --md-sys-color-on-surface-variant: #CAC4D0; /* 톤 80 */
+
+  /* Outline Colors (다크 테마) */
+  --md-sys-color-outline: #938F99;           /* 톤 60 */
+  --md-sys-color-outline-variant: #49454F;   /* 톤 30 */
+
+  /* Error Colors (Red - 다크 테마) */
+  --md-sys-color-error: #FFB4AB;            /* 톤 80 */
+  --md-sys-color-on-error: #690005;         /* 톤 20 */
+  --md-sys-color-error-container: #93000A;  /* 톤 30 */
+  --md-sys-color-on-error-container: #FFDAD6; /* 톤 90 */
   
   /* Shape Tokens */
   --md-sys-shape-corner-none: 0px;

@@ -2,6 +2,8 @@
 import '../styles/material-tokens.css';
 import { NotificationManager } from '../components/NotificationManager';
 import { ToastProvider } from '../components/GlobalToast';
+import { NotificationProvider } from '../components/GlobalNotification';
+import { ThemeProvider } from '../components/ThemeProvider';
 
 export interface Props {
   title: string;
@@ -49,15 +51,19 @@ const { title, description = "현재 방영중인 애니메이션 편성표를 �
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   </head>
   <body class="font-pretendard bg-surface text-on-surface min-h-screen">
-    <!-- Toast Provider로 전체 애플리케이션 감싸기 -->
-    <ToastProvider client:load>
-      <main class="min-h-screen">
-        <slot />
-      </main>
-      
-      <!-- Notification Manager -->
-      <div id="notification-manager"></div>
-    </ToastProvider>
+    <!-- 전체 애플리케이션 Provider 감싸기 -->
+    <ThemeProvider client:load>
+      <ToastProvider client:load>
+        <NotificationProvider client:load>
+          <main class="min-h-screen">
+            <slot />
+          </main>
+          
+          <!-- Notification Manager -->
+          <div id="notification-manager"></div>
+        </NotificationProvider>
+      </ToastProvider>
+    </ThemeProvider>
     
     <!-- Scroll to top button -->
     <button

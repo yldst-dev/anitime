@@ -17,13 +17,15 @@ const ToastContext = createContext<ToastContextType | null>(null);
 
 export function useToast() {
   const context = useContext(ToastContext);
+  
+  // 브라우저 환경이 아닌 경우 기본값 반환
+  if (typeof window === 'undefined') {
+    return {
+      showToast: () => {}
+    };
+  }
+  
   if (!context) {
-    // 브라우저 환경이 아닌 경우 기본값 반환
-    if (typeof window === 'undefined') {
-      return {
-        showToast: () => {}
-      };
-    }
     throw new Error('useToast must be used within a ToastProvider');
   }
   return context;

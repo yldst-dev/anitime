@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { cn } from '../utils/cn';
+import { ThemeToggle } from './ThemeToggle';
 
 interface NavigationMenuProps {
   currentPath: string;
@@ -40,13 +41,15 @@ export function NavigationMenu({ currentPath, className }: NavigationMenuProps) 
       className={cn(
         'flex gap-2 p-2 bg-surface-container rounded-lg',
         'border border-outline-variant max-w-2xl mx-auto',
-        'justify-center items-center',
+        'justify-between items-center',
         className
       )}
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
+      {/* 네비게이션 메뉴 */}
+      <div className="flex gap-2 flex-1 justify-center">
       {navItems.map((item, index) => {
         const isActive = currentPath === item.href;
         
@@ -104,6 +107,12 @@ export function NavigationMenu({ currentPath, className }: NavigationMenuProps) 
           </motion.a>
         );
       })}
+      </div>
+      
+      {/* 다크모드 토글 버튼 */}
+      <div className="flex-shrink-0 ml-4">
+        <ThemeToggle />
+      </div>
     </motion.nav>
   );
 }

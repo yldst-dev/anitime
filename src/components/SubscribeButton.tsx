@@ -8,7 +8,7 @@ import {
   isSubscribed, 
   updateSubscriptionStatus 
 } from '../utils/subscription';
-import { useSubscriptionToast } from './GlobalToast';
+import { useSubscriptionNotification } from './GlobalNotification';
 
 interface SubscribeButtonProps {
   anime: AnimeItem;
@@ -26,7 +26,7 @@ export function SubscribeButton({
   const [subscribed, setSubscribed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const { showSubscribeSuccess, showUnsubscribeSuccess, showSubscribeError } = useSubscriptionToast();
+  const { showSubscribeSuccess, showUnsubscribeSuccess, showSubscribeError } = useSubscriptionNotification();
 
   // 컴포넌트 마운트 확인
   useEffect(() => {
@@ -65,9 +65,13 @@ export function SubscribeButton({
     };
   }, [anime.animeNo, mounted, subscribed]);
 
-  const handleSubscribe = async () => {
+  const handleSubscribe = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     if (loading) return; // 중복 클릭 방지
     
+    console.log('하트 클릭됨:', anime.subject, subscribed ? '구독해제' : '구독');
     setLoading(true);
     
     try {
@@ -75,6 +79,7 @@ export function SubscribeButton({
         unsubscribeFromAnime(anime.animeNo);
         setSubscribed(false);
         showUnsubscribeSuccess(anime.subject);
+        console.log('구독 해제:', anime.subject);
         onSubscriptionChange?.(false);
         
         // 브라우저 환경에서 스토리지 이벤트 강제 발생
@@ -88,6 +93,7 @@ export function SubscribeButton({
         subscribeToAnime(anime);
         setSubscribed(true);
         showSubscribeSuccess(anime.subject);
+        console.log('구독 추가:', anime.subject);
         onSubscriptionChange?.(true);
         
         // 브라우저 환경에서 스토리지 이벤트 강제 발생
@@ -159,7 +165,7 @@ export function SubscribeButton({
     if (variant === 'icon') {
       return cn(
         baseStyles,
-        'p-2 rounded-full',
+        'w-10 h-10 rounded-full flex items-center justify-center',
         subscribed
           ? 'bg-primary-container text-on-primary-container hover:bg-primary hover:text-on-primary'
           : 'bg-surface-container-high text-on-surface hover:bg-surface-container-highest'
@@ -203,11 +209,13 @@ export function SubscribeButton({
         onClick={handleSubscribe}
         disabled={loading}
         className={getButtonStyles()}
+        style={{ pointerEvents: 'auto', cursor: 'pointer' }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.2 }}
+        type="button"
       >
         {loading ? (
           <div className="flex items-center gap-2">
@@ -268,23 +276,8 @@ export function SubscriptionBadge({
     };
   }, [anime.animeNo, mounted, subscribed]);
 
-  if (!mounted || !subscribed) return null;
-
-  return (
-    <motion.div
-      className={cn(
-        'absolute -top-1 -right-1 w-6 h-6 rounded-full',
-        'bg-primary text-on-primary flex items-center justify-center',
-        'text-xs font-bold shadow-md',
-        className
-      )}
-      initial={{ scale: 0 }}
-      animate={{ scale: 1 }}
-      transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-    >
-      💖
-    </motion.div>
-  );
+  // 💖 이모지가 이미 구독 상태를 표시하므로 배지는 필요 없음
+  return null;
 }
 
 // 구독 통계 표시

@@ -44,12 +44,23 @@ export function LoadingIndicator({
   );
 
   return (
-    <div className={baseClasses}>
+    <motion.div 
+      className={baseClasses}
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.6, rotate: 180 }}
+      transition={{ 
+        duration: 0.3,
+        type: 'spring',
+        stiffness: 300,
+        damping: 25
+      }}
+    >
       <motion.div
         className={indicatorClasses}
         variants={shapeVariants}
         animate="animate"
       />
-    </div>
+    </motion.div>
   );
 }

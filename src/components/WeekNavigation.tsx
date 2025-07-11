@@ -22,7 +22,7 @@ export function WeekNavigation({ currentWeek, onWeekChange, className }: WeekNav
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
     >
-      {WEEK_SCHEDULE.map((week) => (
+      {WEEK_SCHEDULE.map((week, index) => (
         <motion.button
           key={week.id}
           onClick={() => onWeekChange(week.id)}
@@ -35,6 +35,16 @@ export function WeekNavigation({ currentWeek, onWeekChange, className }: WeekNav
               ? 'bg-primary text-on-primary'
               : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface'
           )}
+          initial={{ opacity: 0, y: -10, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 10, scale: 0.8 }}
+          transition={{ 
+            delay: index * 0.1, 
+            duration: 0.3,
+            type: 'spring',
+            stiffness: 400,
+            damping: 25
+          }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >

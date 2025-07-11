@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../utils/cn';
+import { ThemeToggle } from './ThemeToggle';
 
 interface NavItem {
   href: string;
@@ -192,6 +193,11 @@ export function MobileNavigationMenu({ currentPath, className }: MobileNavigatio
 
             {/* 푸터 */}
             <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-outline-variant">
+              {/* 다크모드 토글 */}
+              <div className="flex justify-center mb-4">
+                <ThemeToggle />
+              </div>
+              
               <div className="text-center text-sm text-on-surface-variant">
                 <p>애니메이션 편성표</p>
                 <p className="text-xs mt-1">
@@ -210,8 +216,9 @@ export function MobileNavigationMenu({ currentPath, className }: MobileNavigatio
 // 데스크톱용 네비게이션 (간소화)
 export function DesktopNavigationMenu({ currentPath, className }: MobileNavigationMenuProps) {
   return (
-    <nav className={cn('hidden md:flex gap-1', className)}>
-      {navItems.map((item, index) => {
+    <div className={cn('hidden md:flex items-center gap-4', className)}>
+      <nav className="flex gap-1">
+        {navItems.map((item, index) => {
         const isActive = currentPath === item.href;
         
         return (
@@ -252,6 +259,10 @@ export function DesktopNavigationMenu({ currentPath, className }: MobileNavigati
           </motion.a>
         );
       })}
-    </nav>
+      </nav>
+      
+      {/* 다크모드 토글 */}
+      <ThemeToggle />
+    </div>
   );
 }

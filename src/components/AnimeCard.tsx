@@ -50,19 +50,27 @@ export function AnimeCard({ anime, className }: AnimeCardProps) {
           )}>
             {formattedTime}
           </span>
-          {statusLabel && (
-            <motion.span
-              className={cn(
-                'text-xs px-2 py-1 rounded-full font-medium',
-                statusColor
-              )}
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.1 }}
-            >
-              {statusLabel}
-            </motion.span>
-          )}
+          <AnimatePresence>
+            {statusLabel && (
+              <motion.span
+                className={cn(
+                  'text-xs px-2 py-1 rounded-full font-medium',
+                  statusColor
+                )}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0, opacity: 0, y: -10 }}
+                transition={{ 
+                  delay: 0.1,
+                  type: 'spring',
+                  stiffness: 400,
+                  damping: 25
+                }}
+              >
+                {statusLabel}
+              </motion.span>
+            )}
+          </AnimatePresence>
         </div>
         
         {/* 자막 참여자 수 와 구독 버튼 */}
@@ -71,7 +79,7 @@ export function AnimeCard({ anime, className }: AnimeCardProps) {
             <span className="text-xs">👥</span>
             <span className="text-xs">{anime.captionCount}</span>
           </div>
-          <div className="relative">
+          <div className="relative" style={{ pointerEvents: 'auto', zIndex: 10 }}>
             <ErrorBoundary>
               <SubscribeButton anime={anime} variant="icon" />
               <SubscriptionBadge anime={anime} />
